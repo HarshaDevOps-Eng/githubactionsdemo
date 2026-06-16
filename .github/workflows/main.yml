@@ -27,4 +27,4 @@ jobs:
             --exclude ".git*" \
             --exclude ".github" \
             ./ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/html/
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/www/html/
