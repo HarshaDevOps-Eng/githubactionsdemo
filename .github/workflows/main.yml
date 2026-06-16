@@ -16,28 +16,9 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo -e "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          
-          echo "Testing connectivity to EC2..."
-          nc -zv -w 5 ${{ secrets.EC2_HOST }} 22 || echo "Port 22 unreachable"
-          
-          echo "Attempting ssh-keyscan..."
-          ssh-keyscan -t ed25519 -T 15 ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>&1 || {
-            echo "ssh-keyscan failed - checking alternative ports"
-            exit 1
-          }
-                # Validate that EC2_HOST is set
-                if [ -z "${{ secrets.EC2_HOST }}" ]; then
-                echo "Error: EC2_HOST secret is not set"
-                exit 1
-                fi
-    
-          # Add host key with timeout and error handling
-          ssh-keyscan -t ed25519 -T 10 ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>&1 || {
-            echo "Warning: ssh-keyscan failed, attempting alternative approach"
-            ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>&1
-          }
+          ssh-keyscan -t ed25519 -T 10 ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>&1
 
       - name: Deploy to EC2
         run: |
