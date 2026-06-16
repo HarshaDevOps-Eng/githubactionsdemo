@@ -12,14 +12,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo -e "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
+          cat > ~/.ssh/id_ed25519 << 'EOF'
+          ${{ secrets.EC2_SSH_KEY }}
+          EOF
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -t ed25519 -T 10 ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>&1
-
+     
       - name: Deploy to EC2
         run: |
           rsync -avz --delete \
